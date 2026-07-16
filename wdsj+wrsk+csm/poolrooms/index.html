@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POOLROOMS · 池核模拟器</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23bfe8f0'/><rect y='10' width='16' height='6' fill='%2355c0d8'/></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+
+<!-- 进入遮罩 (点击开启指针锁定与音频, 之后无任何 UI) -->
+<div id="enter-screen">
+  <div class="enter-inner">
+    <div class="e-title">POOLROOMS</div>
+    <div class="e-sub">池 核 · 模 拟 器</div>
+    <div class="e-hint">
+      W A S D 移动 · Shift 快走 · 空格 跳跃 / 上浮 · C 下潜<br>
+      点击任意处进入 · Esc 释放鼠标
+    </div>
+    <div class="e-click">CLICK TO ENTER</div>
+  </div>
+</div>
+
+<div id="underwater-tint"></div>
+<div id="fade-overlay"></div>
+
+<script src="js/lib/three.min.js"></script>
+<script src="js/tex.js"></script>
+<script src="js/gen.js"></script>
+<script src="js/water.js"></script>
+<script src="js/world.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/player.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
