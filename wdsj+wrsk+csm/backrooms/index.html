@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阈限 · LIMINAL</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23b8a865'/><rect x='2' y='13' width='12' height='2' fill='%23807248'/></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+<div id="camcorder-overlay"></div>
+<div id="grain-overlay"></div>
+<div id="vignette-overlay"></div>
+
+<!-- ============ 标题 ============ -->
+<div id="title-screen">
+  <div class="title-inner">
+    <div class="t-tag">你不小心穿模掉出了现实</div>
+    <div class="t-main">阈 限</div>
+    <div class="t-en">L I M I N A L &nbsp;S P A C E</div>
+    <div class="t-desc">
+      黄色的墙纸。潮湿的地毯。<br>
+      永不熄灭的荧光灯，嗡嗡作响。<br>
+      这里没有白天和黑夜。只有走不完的房间。
+    </div>
+    <div class="t-menu">
+      <button id="btn-start" class="t-btn">进 入</button>
+      <button id="btn-how" class="t-btn dim">操作说明</button>
+    </div>
+    <div class="t-warn">耳机强烈推荐 · 空间音频定位是生存的关键</div>
+  </div>
+  <div id="how-panel" class="hidden">
+    <div class="how-box">
+      <div class="how-t">// 操作</div>
+      <div class="how-g">
+        <div><b>WASD</b>移动</div><div><b>鼠标</b>视角</div>
+        <div><b>Shift</b>奔跑（消耗体力·发出巨大声响）</div><div><b>E</b>调查 / 交互</div>
+        <div><b>C</b>蹲下（更安静）</div><div><b>Esc</b>释放鼠标</div>
+      </div>
+      <div class="how-t" style="margin-top:22px">// 生存法则</div>
+      <div class="how-rules">
+        1. "它" 靠声音和视线找到你 —— 奔跑是双刃剑。<br>
+        2. 它不会瞬移，也不会穿墙。转角和距离是你的朋友。<br>
+        3. 找到挂着 EXIT 绿灯的安全门，推门即可离开。靠近时能听见电流声。<br>
+        4. 蹲下移动几乎无声，但很慢。<br>
+        5. 散落的杏仁水可以立刻恢复体力。<br>
+        6. 迷路时，跟着墙上的粉笔记号走。
+      </div>
+      <button id="btn-how-close" class="t-btn dim">返 回</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<div id="hud" class="hidden">
+  <div id="center-dot"></div>
+  <div id="objective"><span id="objective-text"></span></div>
+  <div id="interact-tip" class="hidden"><span class="key">E</span><span id="interact-label"></span></div>
+  <div id="stamina-wrap" class="hidden"><div id="stamina-fill"></div></div>
+  <div id="subtitle"></div>
+  <div id="danger-vignette"></div>
+</div>
+
+<!-- ============ 纸条 ============ -->
+<div id="note-screen" class="hidden">
+  <div class="note-paper">
+    <div id="note-text"></div>
+    <div class="note-close">[ E ] 放回</div>
+  </div>
+</div>
+
+<!-- ============ 被抓 ============ -->
+<div id="caught-screen" class="hidden">
+  <div class="caught-inner">
+    <div class="caught-t">你被发现了</div>
+    <div class="caught-s">这里的时间没有意义。你在别处醒来。</div>
+  </div>
+</div>
+
+<!-- ============ 结局 ============ -->
+<div id="ending-screen" class="hidden">
+  <div id="ending-text"></div>
+</div>
+
+<div id="fade-overlay"></div>
+
+<script src="js/lib/three.min.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/maze.js"></script>
+<script src="js/world.js"></script>
+<script src="js/player.js"></script>
+<script src="js/entity.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
