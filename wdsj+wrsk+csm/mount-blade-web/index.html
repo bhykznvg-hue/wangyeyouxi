@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>骑砍风云 — 开放世界骑砍网页游戏</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0c10;font-family:"Microsoft YaHei",sans-serif;color:#e8e0d0}
+#c{position:fixed;inset:0;display:block}
+#ui{position:fixed;inset:0;pointer-events:none}
+.bar{height:100%;border-radius:3px;transition:width .15s}
+.barwrap{width:220px;height:13px;background:rgba(0,0,0,.55);border:1px solid #55503f;border-radius:4px;margin-bottom:5px;overflow:hidden}
+#hudTL{position:absolute;left:16px;top:14px}
+#hpbar{background:linear-gradient(180deg,#d0453a,#8a2318)}
+#stbar{background:linear-gradient(180deg,#d0b040,#8a7218)}
+#horsebar{background:linear-gradient(180deg,#8a6a4a,#5a4228)}
+#ammolab{color:#d0c8a8;font-size:14px;text-shadow:0 1px 2px #000}
+#hudTR{position:absolute;right:16px;top:14px;text-align:right}
+#minimap{border:2px solid #55503f;border-radius:6px;background:#111;box-shadow:0 2px 12px rgba(0,0,0,.6)}
+#timelab{font-size:13px;color:#cfc4a8;margin-top:4px;text-shadow:0 1px 2px #000}
+#goldwrap{font-size:15px;color:#ffd776;margin-top:2px;text-shadow:0 1px 2px #000}
+#selLab{position:absolute;left:16px;bottom:38px;font-size:13px;color:#a8c4dd;text-shadow:0 1px 2px #000;background:rgba(10,14,20,.45);padding:4px 10px;border-radius:4px}
+#orderfx{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:26px;font-weight:bold;color:#ffd776;text-shadow:0 2px 6px #000;opacity:0;transition:opacity .4s}
+#hint{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);font-size:16px;color:#fff;background:rgba(10,14,20,.6);padding:6px 16px;border-radius:6px;display:none;text-shadow:0 1px 2px #000}
+#notes{position:absolute;left:16px;top:120px;width:420px}
+.note{font-size:14px;margin-bottom:3px;text-shadow:0 1px 3px #000;transition:opacity .5s}
+#banner{position:absolute;left:50%;top:16%;transform:translateX(-50%);font-size:34px;font-weight:bold;color:#f0dfb0;text-shadow:0 3px 10px #000;opacity:0;transition:opacity .8s;white-space:nowrap}
+#battlebar{position:absolute;left:50%;top:12px;transform:translateX(-50%);display:none;gap:18px;font-size:15px;background:rgba(10,14,20,.55);padding:5px 18px;border-radius:6px;text-shadow:0 1px 2px #000}
+#dmgflash{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(160,10,10,.7));opacity:0;transition:opacity .25s;pointer-events:none}
+#hitmark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;color:#fff;opacity:0;text-shadow:0 0 4px #000}
+#crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;display:none}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:#fff;box-shadow:0 0 2px #000}
+#crosshair::before{left:6px;top:0;width:2px;height:14px}
+#crosshair::after{left:0;top:6px;width:14px;height:2px}
+#xpwrap{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:340px;height:6px;background:rgba(0,0,0,.6);border:1px solid #454031;border-radius:3px}
+#xpbar{background:#6a9a3a;height:100%;border-radius:3px}
+#levellab{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font-size:11px;color:#a8c48a;text-shadow:0 1px 2px #000}
+#death{position:absolute;inset:0;background:rgba(30,0,0,.72);display:none;align-items:center;justify-content:center;flex-direction:column;font-size:40px;color:#e0b0a0;text-shadow:0 3px 12px #000}
+.modal{position:absolute;inset:0;background:rgba(5,8,12,.66);display:none;align-items:center;justify-content:center;pointer-events:auto}
+.panel{background:linear-gradient(180deg,#1c1a16,#12100d);border:1px solid #6a5f45;border-radius:10px;padding:20px 24px;min-width:420px;max-width:760px;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)}
+.panel h2{color:#e8d5a0;font-size:20px;margin-bottom:12px;border-bottom:1px solid #454031;padding-bottom:8px}
+.opt{padding:9px 12px;margin:4px 0;background:rgba(255,255,255,.05);border:1px solid #3a352a;border-radius:6px;cursor:pointer;font-size:15px}
+.opt:hover{background:rgba(255,220,150,.12);border-color:#8a7a55}
+.eqslot{padding:8px 12px;margin:4px 0;background:rgba(0,0,0,.28);border:1px solid #33302a;border-radius:6px;font-size:14px}
+.dim{color:#8a8272;font-size:12px}
+.gold{color:#ffd776}
+.closex{float:right;cursor:pointer;color:#b0a488;font-size:18px;padding:0 6px}
+.closex:hover{color:#fff}
+.cols{display:flex;gap:14px}
+.cols>div{flex:1;min-width:240px}
+.btn{display:inline-block;padding:10px 26px;margin:6px 4px;background:linear-gradient(180deg,#4a4232,#2c2820);border:1px solid #8a7a55;border-radius:8px;cursor:pointer;font-size:16px;color:#f0e5c8}
+.btn:hover{background:linear-gradient(180deg,#5c5240,#3a3428)}
+#loading{position:fixed;inset:0;background:#0a0c10;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:50}
+#loadwrap{width:420px;height:16px;border:1px solid #6a5f45;border-radius:8px;margin-top:18px;overflow:hidden}
+#loadbar{height:100%;width:0;background:linear-gradient(90deg,#8a6a2a,#d8b25a);transition:width .2s}
+#loadtext{margin-top:10px;color:#9a9282;font-size:13px}
+#loadtitle{font-size:38px;color:#e8d5a0;letter-spacing:8px;text-shadow:0 4px 18px rgba(216,178,90,.3)}
+kbd{background:#2a2620;border:1px solid #55503f;border-radius:4px;padding:1px 7px;font-size:13px;color:#ffd776;margin:0 2px}
+.helprow{margin:5px 0;font-size:14px;color:#cfc4a8}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="dmgflash"></div>
+  <div id="hudTL">
+    <div class="barwrap"><div id="hpbar" class="bar"></div></div>
+    <div class="barwrap" style="width:180px;height:9px"><div id="stbar" class="bar"></div></div>
+    <div class="barwrap" id="horsebarwrap" style="width:150px;height:8px;display:none"><div id="horsebar" class="bar"></div></div>
+    <div id="ammolab" style="display:none"></div>
+  </div>
+  <div id="hudTR">
+    <canvas id="minimap" width="190" height="190"></canvas>
+    <div id="timelab"></div>
+    <div id="goldwrap">金币 <span id="goldlab">0</span></div>
+  </div>
+  <div id="battlebar"><span id="bcount"></span><span id="bmorale" style="color:#c8b880"></span></div>
+  <div id="banner"></div>
+  <div id="notes"></div>
+  <div id="orderfx"></div>
+  <div id="hint"></div>
+  <div id="selLab"></div>
+  <div id="crosshair"></div>
+  <div id="hitmark">✕</div>
+  <div id="xpwrap"><div id="xpbar" class="bar"></div></div>
+  <div id="levellab"></div>
+  <div id="death"><div>你 倒 下 了</div><div style="font-size:16px;margin-top:14px;color:#c09a8a">部下会带你撤离…片刻后在附近城镇苏醒</div></div>
+
+  <div class="modal" id="pauseM"><div class="panel" style="text-align:center">
+    <h2>游戏暂停</h2>
+    <div class="btn" id="pauseResume">继续游戏</div><br>
+    <div class="btn" id="pauseSave">保存进度</div>
+    <div class="btn" id="pauseLoad">读取存档</div><br>
+    <div class="btn" id="pauseHelp">操作说明</div>
+    <div class="btn" id="pauseShadow">切换阴影</div>
+  </div></div>
+
+  <div class="modal" id="dialogM"><div class="panel">
+    <h2><span id="dlgTitle"></span><span class="closex" data-close>✕</span></h2>
+    <div id="dlgOpts"></div>
+  </div></div>
+
+  <div class="modal" id="tradeM"><div class="panel" style="min-width:640px">
+    <h2><span id="tradeTitle"></span><span class="closex" data-close>✕</span></h2>
+    <div id="tradeGold" class="gold" style="margin-bottom:8px"></div>
+    <div class="cols">
+      <div><div class="dim" style="margin-bottom:4px">商店（点击购买）</div><div id="shopList"></div></div>
+      <div><div class="dim" style="margin-bottom:4px">你的背包（点击出售）</div><div id="invList"></div></div>
+    </div>
+  </div></div>
+
+  <div class="modal" id="recruitM"><div class="panel">
+    <h2>招募士兵<span class="closex" data-close>✕</span></h2>
+    <div id="recCap" class="dim" style="margin-bottom:6px"></div>
+    <div id="recList"></div>
+  </div></div>
+
+  <div class="modal" id="invM"><div class="panel" style="min-width:560px">
+    <h2>装备与物品 <span class="dim">(I)</span><span class="closex" data-close>✕</span></h2>
+    <div class="cols">
+      <div><div class="dim">当前装备</div><div id="equipList"></div></div>
+      <div><div class="dim">背包（点击装备）</div><div id="invList2"></div></div>
+    </div>
+  </div></div>
+
+  <div class="modal" id="charM"><div class="panel">
+    <h2>角色 <span class="dim">(K)</span><span class="closex" data-close>✕</span></h2>
+    <div id="charStats" style="line-height:1.8;margin-bottom:10px"></div>
+    <div id="skillList"></div>
+  </div></div>
+
+  <div class="modal" id="partyM"><div class="panel" style="min-width:560px">
+    <h2>我的部队 <span class="dim">(Tab)</span><span class="closex" data-close>✕</span></h2>
+    <div id="partyCap" class="dim" style="margin-bottom:6px"></div>
+    <div id="partyList"></div>
+  </div></div>
+
+  <div class="modal" id="questM"><div class="panel">
+    <h2>任务日志 <span class="dim">(J)</span><span class="closex" data-close>✕</span></h2>
+    <div id="questList"></div>
+  </div></div>
+
+  <div class="modal" id="mapM"><div class="panel" style="max-width:640px">
+    <h2>世界地图 <span class="dim">(M)</span><span class="closex" data-close>✕</span></h2>
+    <canvas id="bigmap" width="560" height="560" style="border:1px solid #454031;border-radius:6px"></canvas>
+  </div></div>
+
+  <div class="modal" id="lootM"><div class="panel">
+    <h2>战利品</h2>
+    <div id="lootList"></div>
+    <div class="btn" data-close style="margin-top:10px">收下</div>
+  </div></div>
+
+  <div class="modal" id="siegeM"><div class="panel">
+    <h2>攻城战</h2>
+    <div id="siegeText" style="line-height:1.7;margin-bottom:12px"></div>
+    <div class="btn" id="siegeYes">开始进攻！</div>
+    <div class="btn" data-close>再等等</div>
+  </div></div>
+
+  <div class="modal" id="helpM"><div class="panel" style="min-width:560px">
+    <h2>操作说明<span class="closex" data-close>✕</span></h2>
+    <div class="helprow"><kbd>W A S D</kbd> 移动　<kbd>Shift</kbd> 疾跑　<kbd>Space</kbd> 翻滚闪避 / 骑马冲刺</div>
+    <div class="helprow"><kbd>鼠标</kbd> 视角　<kbd>滚轮</kbd> 缩放视距</div>
+    <div class="helprow"><kbd>左键</kbd> 按住蓄力松开劈砍（按住时鼠标向左/右/上推 = 左挥/右挥/突刺）</div>
+    <div class="helprow"><kbd>右键</kbd> 格挡（持弓时为瞄准，配合左键拉弓放箭）</div>
+    <div class="helprow"><kbd>Q</kbd> 切换 近战/弓　<kbd>X</kbd> 骑枪夹持冲锋　<kbd>R</kbd> 上/下马　<kbd>H</kbd> 呼唤坐骑　<kbd>E</kbd> 互动</div>
+    <div class="helprow"><kbd>1</kbd>全体 <kbd>2</kbd>步兵 <kbd>3</kbd>弓兵 <kbd>4</kbd>骑兵 → <kbd>F</kbd>跟随 <kbd>G</kbd>驻守 <kbd>C</kbd>冲锋 <kbd>V</kbd>阵型（横列/盾墙/楔形/散阵/环形）</div>
+    <div class="helprow"><kbd>Tab</kbd> 部队　<kbd>I</kbd> 装备　<kbd>K</kbd> 角色　<kbd>J</kbd> 任务　<kbd>M</kbd> 地图　<kbd>Esc</kbd> 菜单</div>
+    <div class="helprow" style="margin-top:8px;color:#d8b25a">战术提示：盾墙挡箭 · 长枪驻守克骑兵 · 骑枪冲锋伤害巨大 · 士气崩溃会溃逃</div>
+  </div></div>
+
+  <div class="modal" id="introM" style="background:rgba(5,8,12,.88)"><div class="panel" style="max-width:620px;text-align:center">
+    <h2 style="font-size:26px;text-align:center;border:none">骑 砍 风 云</h2>
+    <div style="color:#b8ae96;line-height:1.8;margin:8px 0 14px;text-align:left">
+      卡拉德风格的大陆战火纷飞：北境王国、苍金帝国与风原汗国互相攻伐，强盗横行乡野。
+      你是一名初出茅庐的佣兵队长——招募士兵、磨练武艺、经商致富、扬名立万，
+      指挥你的军队在旷野与城墙下进行数百人规模的冷兵器会战，直至攻陷城堡、称霸一方。
+    </div>
+    <div style="text-align:left;margin-bottom:12px" class="dim">
+      新手指引：先到村庄找长老招募几名新兵 → 在附近剿灭小股强盗 → 用战利品购买装备与战马 → 接任务提升声望与等级。
+    </div>
+    <div class="btn" id="introStart">开始征程</div>
+    <div class="btn" id="introLoad" style="display:none">继续存档</div>
+    <div class="btn" id="introHelp">操作说明</div>
+  </div></div>
+</div>
+
+<div id="loading">
+  <div id="loadtitle">骑 砍 风 云</div>
+  <div id="loadwrap"><div id="loadbar"></div></div>
+  <div id="loadtext">正在初始化…</div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/rpg.js"></script>
+<script src="js/world.js"></script>
+<script src="js/settlements.js"></script>
+<script src="js/sky.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/units.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/player.js"></script>
+<script src="js/parties.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
